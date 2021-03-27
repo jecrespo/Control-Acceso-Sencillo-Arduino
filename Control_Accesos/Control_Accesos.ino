@@ -2,15 +2,31 @@
 #include <MFRC522.h>
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
+#include <Keypad.h>
 
 #define SS_PIN 10
 #define RST_PIN 9
+
+const byte ROWS = 4; //four rows
+const byte COLS = 4; //four columns
+//define the cymbols on the buttons of the keypads
+char hexaKeys[ROWS][COLS] = { //número ASCII no caracteres, no son imprimibles. Solo como indices
+  {1, 2, 3, 4},
+  {5, 6, 7, 8},
+  {9, 10, 11, 12},
+  {13, 14, 15, 16}
+};
+String teclas [] = {"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S12", "S13", "S14", "S15", "S16"};
+byte rowPins[ROWS] = {A1, A2, A3, A4}; //connect to the row pinouts of the keypad
+byte colPins[COLS] = {A0, 2, 3, 4}; //connect to the column pinouts of the keypad
  
 MFRC522 rfid(SS_PIN, RST_PIN); // Instance of the class
 LiquidCrystal_I2C lcd(0x27, 16, 2); // set the LCD address to 0x27 for a 16 chars and 2 line display
+Keypad customKeypad = Keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); //initialize an instance of class NewKeypad
 
 // Init array that will store new NUID 
 byte nuidPICC[4] = {0x96,0x86,0xED,0x75}; //tarjeta conocida
+String pin1[4] = {"S2","S4","S5","S7"};
 
 void setup() {
   Serial.begin(9600);
@@ -72,6 +88,60 @@ void loop() {
     lcd.setCursor(0, 1);
     lcd.print("Introduce PIN");
   }
+
+  //lee PIN
+  String pin_leido[4];
+  int i = 0;
+  unsigned long tiempo = millis();
+  while (true){
+    char customKey = customKeypad.getKey();
+    if (customKey) {
+      pin_leido[i] = teclas[(int)customKey-1];
+      Serial.println(teclas[(int)customKey-1]);
+      i++;
+    }
+    if (i == 4)
+      break;
+
+    if ((millis()-tiempo) > 15000){
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Timeout");
+      Serial.println("Timeout");
+      delay(2000);
+      mensajeInicio();
+      rfid.PICC_HaltA();
+      return;
+    }
+  }
+
+  //Comprobar PIN
+  for (int j = 0; j<=3; j++){
+    if (pin_leido[j] != pin1[j]){
+      //error por LCD
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("PIN erroneo");
+      Serial.println("PIN erroneo");
+      delay(2000);
+      mensajeInicio();
+
+      rfid.PICC_HaltA();
+      return;
+    }   
+  }
+
+  Serial.println("Abrir Puerta");
+  digitalWrite(8,HIGH);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Puerta Abierta");
+  delay(5000);
+  digitalWrite(8,LOW);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Puerta Cerrada");
+  delay(2000);
 
   // Halt PICC
   rfid.PICC_HaltA();

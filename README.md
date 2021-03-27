@@ -29,7 +29,6 @@ Diagrama de bloques en [lucidchart](https://www.lucidchart.com/): [link para com
 
 ![diagrama](Diagrama_Bloques_Arduino_Control_Acceso.png "bloques")
 
-TODO:
+## Esquema Conexiones
 
-- Esquema de conexiones con Fritzing
-- Diagrama de bloques con la lógica usada
+![esquema](Esquema_Control_Accesos_bb.png "esquema")
