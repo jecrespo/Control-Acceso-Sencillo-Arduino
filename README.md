@@ -23,6 +23,12 @@ Uso de cada elemento de forma individual
 
 Unir todos para hacer un proyecto sencillo con Arduino.
 
+Diagrama de bloques en [lucidchart](https://www.lucidchart.com/): [link para compartir](https://lucid.app/lucidchart/invitations/accept/7e13e4ea-dedf-4020-aeaa-387500ee4b3f?viewport_loc=-220%2C33%2C2318%2C1225%2C0_0)
+
+## Diagrama de Bloques
+
+![diagrama](Diagrama_Bloques_Arduino_Control_Acceso.png "bloques")
+
 TODO:
 
 - Esquema de conexiones con Fritzing
